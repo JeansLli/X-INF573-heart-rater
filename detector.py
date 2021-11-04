@@ -33,4 +33,4 @@ def main(framerate = 10, scale=1.5):
     cv2.destroyAllWindows()
 
 
-main(framerate = 50, scale = 1.5)
+main(framerate = 20, scale = 1.5)

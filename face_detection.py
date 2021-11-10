@@ -1,4 +1,5 @@
 import cv2 as cv2
+import numpy as np
 from skimage import io
 
 #only works well for people without masks
@@ -44,6 +45,9 @@ def forehead_detection(frame, coordinates):
     cv2.rectangle(frame, (start_x, start_y), (stop_x, stop_y), (0, 255, 0), thickness=2)
 
     #cut this part out then, then return it to analyse further.
-    
+    frame_mod = frame[start_y:stop_y,start_x:stop_x]
+    #white_bg = 255*np.ones_like(frame)
+    #white_bg[start_y:stop_y,start_x:stop_x] = frame_mod
+    return (frame,frame_mod)
 
     #use the empiric value of skin proportions to cut out the forehead.

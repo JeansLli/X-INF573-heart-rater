@@ -70,12 +70,25 @@ def detect_change(buffer_object):
 
     #plot
     t = np.arange(X_.shape[0])
-    plt.title("Red")
+    plt.title("red")
     plt.xlabel("x axis caption")
     plt.ylabel("t axis caption")
     plt.plot(t, S_[:,0])
     plt.show()
 
+    t = np.arange(X_.shape[0])
+    plt.title("green")
+    plt.xlabel("x axis caption")
+    plt.ylabel("t axis caption")
+    plt.plot(t, S_[:, 1])
+    plt.show()
+
+    t = np.arange(X_.shape[0])
+    plt.title("blue")
+    plt.xlabel("x axis caption")
+    plt.ylabel("t axis caption")
+    plt.plot(t, S_[:, 2])
+    plt.show()
 
 
 

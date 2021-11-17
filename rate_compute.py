@@ -1,13 +1,16 @@
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
+import pdb
+from sklearn.decomposition import FastICA
 
 #create the data to test the function
 
 buffer = []
-for j in range(150):
-    im = cv2.imread('/home/theo/Documents/ecole_polytechnique/computer_vision/project/X-INF573-heart-rater/test_forhead/pic_%i.png'%j)
+for j in range(50):
+    im = cv2.imread('/Users/jingyili/Documents/ip-paris/courses_taken/INF573/project/data_face/pic_%i.png'%j)
     buffer.append(im)
+
 
 
 def detect_change(buffer_object):
@@ -54,9 +57,30 @@ def detect_change(buffer_object):
     x_red =  x_red/np.linalg.norm(x_red)
     x_green =  x_green/np.linalg.norm(x_green)
     x_blue =  x_blue/np.linalg.norm(x_blue)
-    
-    
-    
-    
+
+
+    #Linear independent component analysis can be divided into noiseless and noisy cases
+    # https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.FastICA.html
+    X_ = np.vstack((x_red,x_green,x_blue)).T
+    #pdb.set_trace()
+    transformer = FastICA(n_components=3, random_state = 0)
+    S_ = transformer.fit_transform(X_)
+    print("X_.shape", X_.shape)
+    print("S_.shape",S_.shape)
+
+    #plot
+    t = np.arange(X_.shape[0])
+    plt.title("Red")
+    plt.xlabel("x axis caption")
+    plt.ylabel("t axis caption")
+    plt.plot(t, S_[:,0])
+    plt.show()
+
+
+
+
+
+
+
 
 detect_change(buffer)

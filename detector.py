@@ -34,11 +34,12 @@ def main(framerate = 20, scale=1.5):
 
         frame_buffer_object.append(forehead)
         #how many frames do we want to pass?
+        print("len(frame_buffer_object)=",len(frame_buffer_object))
         if(len(frame_buffer_object)==(framerate*5)):
             #remove the first frame from the buffer
             print("frame buffer object",len(frame_buffer_object))
             frame_buffer_object.pop(0)
-            rate_compute.detect_change(frame_buffer_object)
+            rate_compute.detect_change(frame_buffer_object, 1/framerate)
         #here call t
         #pass the pictures to the function to compute the buffer
         '''
@@ -50,7 +51,7 @@ def main(framerate = 20, scale=1.5):
         '''
         #tuning of the parameters of the buffer size and the framerate to see when it is good.
 
-        cv2.imshow('Input', fr)
+        #cv2.imshow('Input', fr)
 
         c = cv2.waitKey(int(1000//framerate))
 

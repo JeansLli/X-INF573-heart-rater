@@ -13,12 +13,13 @@ for j in range(50):
 
 
 
-def detect_change(buffer_object):
+def detect_change(buffer_object,Ts):
     """
     Input: buffer object, a sequence of frames
     Output: 
     """
-    
+
+    print("enter detect_change")
     min_y = buffer_object[0].shape[0]
     min_x = buffer_object[0].shape[1]
     for j in range(len(buffer_object)):
@@ -35,7 +36,9 @@ def detect_change(buffer_object):
     for idx in range(len(buffer_object)):
         #cut the pictures in the right size
         buffer_object[idx] = buffer_object[idx][:min_y,:min_x,::]
-    
+
+
+    print("after cutting")
     #for idx in range(len(buffer_object)):
     #    print(buffer_object[j].shape)
     #calculate the maximum red green and blue value, plot it over the frame
@@ -65,35 +68,53 @@ def detect_change(buffer_object):
     #pdb.set_trace()
     transformer = FastICA(n_components=3, random_state = 0)
     S_ = transformer.fit_transform(X_)
-    print("X_.shape", X_.shape)
-    print("S_.shape",S_.shape)
+    #print("X_.shape", X_.shape)
+    #print("S_.shape",S_.shape)
 
-    #plot
-    t = np.arange(X_.shape[0])
-    plt.title("red")
+
+    pdb.set_trace()
+
+    red_fft = np.fft.fft(S_[:,0])
+    red_freq = np.fft.fftfreq(np.size(S_[:,0],0),Ts)
+
+    t = np.arange(S_.shape[0])
+    plt.clf()
+    plt.title("frequency")
+    plt.xlabel("x axis frequency")
+    plt.ylabel("t axis value")
+    plt.plot(red_freq, np.real(red_fft), color="red")
+
+
+
+
+    # plot
+    #plt.title("red")
+    '''
+    plt.clf()
+    plt.title("RGB")
     plt.xlabel("x axis caption")
     plt.ylabel("t axis caption")
-    plt.plot(t, S_[:,0])
-    plt.show()
+    plt.plot(t, S_[:, 0],color="red")
+    #plt.show()
 
     t = np.arange(X_.shape[0])
-    plt.title("green")
+    #plt.title("green")
     plt.xlabel("x axis caption")
     plt.ylabel("t axis caption")
-    plt.plot(t, S_[:, 1])
-    plt.show()
+    plt.plot(t, S_[:, 1],color="green")
+    #plt.show()
 
     t = np.arange(X_.shape[0])
-    plt.title("blue")
+    #plt.title("blue")
     plt.xlabel("x axis caption")
     plt.ylabel("t axis caption")
-    plt.plot(t, S_[:, 2])
+    plt.plot(t, S_[:, 2],color="blue")
+    #plt.show()
+    '''
     plt.show()
+    #plt.draw()
+    #plt.pause(0.01)
 
 
 
-
-
-
-
-detect_change(buffer)
+detect_change(buffer,0.1)

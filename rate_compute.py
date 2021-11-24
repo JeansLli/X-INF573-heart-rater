@@ -20,7 +20,7 @@ def detect_change(buffer_object,Ts):
     Output: 
     """
 
-    print("enter detect_change")
+    #print("enter detect_change")
     min_y = buffer_object[0].shape[0]
     min_x = buffer_object[0].shape[1]
     for j in range(len(buffer_object)):
@@ -39,7 +39,7 @@ def detect_change(buffer_object,Ts):
         buffer_object[idx] = buffer_object[idx][:min_y,:min_x,::]
 
 
-    print("after cutting")
+    #print("after cutting")
     #for idx in range(len(buffer_object)):
     #    print(buffer_object[j].shape)
     #calculate the maximum red green and blue value, plot it over the frame
@@ -75,54 +75,69 @@ def detect_change(buffer_object,Ts):
 
     #pdb.set_trace()
 
-    """
+    t = np.arange(S_.shape[0])
     red_fft = np.fft.fft(S_[:,0])
     red_freq = np.fft.fftfreq(np.size(S_[:,0],0),Ts)
-    """
-    red_fourier = np.fft.fft(x_red)
-    red_freqs = np.fft.fftfreq(np.size(x_red,0),Ts)
     
-    t = np.arange(S_.shape[0])
-    '''
+    
+    indexing = np.ma.masked_where(np.abs(red_freq)<2.1, red_freq)
+    vals_to_keep = indexing.mask
+    red_freq = red_freq[vals_to_keep]
+    red_fft = red_fft[vals_to_keep]
+
+    indexing = np.ma.masked_where(red_freq>0.5, red_freq)
+    vals_to_keep = indexing.mask
+    red_freq = red_freq[vals_to_keep]
+    red_fft = red_fft[vals_to_keep]
+
+
+    green_fft = np.fft.fft(S_[:,1])
+    green_freq = np.fft.fftfreq(np.size(S_[:,1],0),Ts)
+    
+    
+    indexing = np.ma.masked_where(np.abs(green_freq)<2.1, green_freq)
+    vals_to_keep = indexing.mask
+    green_freq = green_freq[vals_to_keep]
+    green_fft = green_fft[vals_to_keep]
+
+    indexing = np.ma.masked_where(green_freq>0.5, green_freq)
+    vals_to_keep = indexing.mask
+    green_freq = green_freq[vals_to_keep]
+    green_fft = green_fft[vals_to_keep]
+
+    blue_fft = np.fft.fft(S_[:,2])
+    blue_freq = np.fft.fftfreq(np.size(S_[:,2],0),Ts)
+    
+    
+    indexing = np.ma.masked_where(np.abs(blue_freq)<2.1, blue_freq)
+    vals_to_keep = indexing.mask
+    blue_freq = blue_freq[vals_to_keep]
+    blue_fft = blue_fft[vals_to_keep]
+
+    indexing = np.ma.masked_where(blue_freq>0.5, blue_freq)
+    vals_to_keep = indexing.mask
+    blue_freq = blue_freq[vals_to_keep]
+    blue_fft = blue_fft[vals_to_keep]
+    
+    #print('red_freq',red_freq)
     plt.clf()
     plt.title("frequency")
     plt.xlabel("x axis frequency")
     plt.ylabel("t axis value")
     plt.plot(red_freq, np.real(red_fft), color="red")
-    '''
-
-
-
-    # plot
-    #plt.title("red")
-    
-    plt.clf()
-    plt.title("RGB")
-    plt.xlabel("Frequency")
-    plt.ylabel("Ampitude")
-    #plt.plot(t, S_[:, 0],color="red")
-    plt.plot(red_freqs,red_fourier, color = "blue")
-    #plt.show()
-    '''
-    t = np.arange(X_.shape[0])
-    #plt.title("green")
-    plt.xlabel("x axis caption")
-    plt.ylabel("t axis caption")
-    plt.plot(t, S_[:, 1],color="green")
-    #plt.show()
-
-    t = np.arange(X_.shape[0])
-    #plt.title("blue")
-    plt.xlabel("x axis caption")
-    plt.ylabel("t axis caption")
-    plt.plot(t, S_[:, 2],color="blue")
-    #plt.show()
-    '''
-    #plt.show()
+    plt.plot(green_freq, np.real(green_fft), color = "green")
+    plt.plot(blue_freq, np.real(blue_fft), color = "blue")
     
     plt.draw()
     plt.pause(0.01)
 
+    peak_red = red_freq[np.argmax(np.real(red_fft))]
+    peak_green = green_freq[np.argmax(np.real(green_fft))]
+    peak_blue = blue_freq[np.argmax(np.real(blue_fft))]
+    
+    print('heart rate red in bpm',peak_red*60)
+    print('heart rate green in bpm',peak_green*60)
+    #print('heart rate blue in bpm',peak_blue*60)
 
 
 #detect_change(buffer,0.1)

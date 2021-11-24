@@ -14,8 +14,8 @@ def main(framerate = 20, scale=0.1):
     """
     frame_buffer_object = []
     #here later add the feature to use a different webcam, not just the default one
-    #cap = cv2.VideoCapture(0)
-    cap = cv2.VideoCapture('../testing.mp4')
+    cap = cv2.VideoCapture(0)
+    #cap = cv2.VideoCapture('./video/testing.mp4')
 
     # Check if the webcam is opened correctly
     if not cap.isOpened():
@@ -25,7 +25,8 @@ def main(framerate = 20, scale=0.1):
         ret, frame = cap.read()
         frame = cv2.resize(frame, None, fx=1, fy=1, interpolation=cv2.INTER_AREA)
         #here detact the face
-        frame = ndimage.rotate(frame, 180+90)
+        #rotate the frame if necessary
+        #frame = ndimage.rotate(frame, 180+90)
         coordinates = face_detection.detact_and_draw_box(frame)
         fr, forehead = face_detection.forehead_detection(frame, coordinates)
         #here manipulate the frame
@@ -36,10 +37,10 @@ def main(framerate = 20, scale=0.1):
 
         frame_buffer_object.append(forehead)
         #how many frames do we want to pass?
-        print("len(frame_buffer_object)=",len(frame_buffer_object))
-        if(len(frame_buffer_object)==(framerate*5)):
+        #print("len(frame_buffer_object)=",len(frame_buffer_object))
+        if(len(frame_buffer_object)==(framerate)*5):
             #remove the first frame from the buffer
-            print("frame buffer object",len(frame_buffer_object))
+            #print("frame buffer object",len(frame_buffer_object))
             frame_buffer_object.pop(0)
             rate_compute.detect_change(frame_buffer_object, 1/framerate)
         #here call t

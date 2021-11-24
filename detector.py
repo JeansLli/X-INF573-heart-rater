@@ -5,15 +5,17 @@ import cv2
 import  face_detection
 import  rate_compute
 import pdb
+from scipy import ndimage
 
-def main(framerate = 20, scale=1.5):
+def main(framerate = 20, scale=0.1):
     """
     Input: The framerate in FPS and the scale of the video window
     Output: The video feed from the webcam
     """
     frame_buffer_object = []
     #here later add the feature to use a different webcam, not just the default one
-    cap = cv2.VideoCapture(0)
+    #cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture('../testing.mp4')
 
     # Check if the webcam is opened correctly
     if not cap.isOpened():
@@ -21,9 +23,9 @@ def main(framerate = 20, scale=1.5):
     counter = 0
     while True:
         ret, frame = cap.read()
-        frame = cv2.resize(frame, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
+        frame = cv2.resize(frame, None, fx=1, fy=1, interpolation=cv2.INTER_AREA)
         #here detact the face
-        
+        frame = ndimage.rotate(frame, 180+90)
         coordinates = face_detection.detact_and_draw_box(frame)
         fr, forehead = face_detection.forehead_detection(frame, coordinates)
         #here manipulate the frame
@@ -50,8 +52,9 @@ def main(framerate = 20, scale=1.5):
         counter += 1
         '''
         #tuning of the parameters of the buffer size and the framerate to see when it is good.
-
-        #cv2.imshow('Input', fr)
+        cv2.namedWindow('Input',cv2.WINDOW_NORMAL)
+        cv2.resizeWindow('Input', 500,500)
+        cv2.imshow('Input', fr)
 
         c = cv2.waitKey(int(1000//framerate))
 
@@ -60,4 +63,4 @@ def main(framerate = 20, scale=1.5):
     cv2.destroyAllWindows()
 
 
-main(framerate = 10, scale = 1.5)
+main(framerate = 47, scale = 1.5)

@@ -8,8 +8,9 @@ from sklearn.decomposition import FastICA
 
 buffer = []
 for j in range(50):
-    im = cv2.imread('/Users/jingyili/Documents/ip-paris/courses_taken/INF573/project/data_face/pic_%i.png'%j)
-    buffer.append(im)
+    #im = cv2.imread('/Users/jingyili/Documents/ip-paris/courses_taken/INF573/project/data_face/pic_%i.png'%j)
+    #buffer.append(im)
+    pass
 
 
 
@@ -72,31 +73,37 @@ def detect_change(buffer_object,Ts):
     #print("S_.shape",S_.shape)
 
 
-    pdb.set_trace()
+    #pdb.set_trace()
 
+    """
     red_fft = np.fft.fft(S_[:,0])
     red_freq = np.fft.fftfreq(np.size(S_[:,0],0),Ts)
-
+    """
+    red_fourier = np.fft.fft(x_red)
+    red_freqs = np.fft.fftfreq(np.size(x_red,0),Ts)
+    
     t = np.arange(S_.shape[0])
+    '''
     plt.clf()
     plt.title("frequency")
     plt.xlabel("x axis frequency")
     plt.ylabel("t axis value")
     plt.plot(red_freq, np.real(red_fft), color="red")
-
+    '''
 
 
 
     # plot
     #plt.title("red")
-    '''
+    
     plt.clf()
     plt.title("RGB")
-    plt.xlabel("x axis caption")
-    plt.ylabel("t axis caption")
-    plt.plot(t, S_[:, 0],color="red")
+    plt.xlabel("Frequency")
+    plt.ylabel("Ampitude")
+    #plt.plot(t, S_[:, 0],color="red")
+    plt.plot(red_freqs,red_fourier, color = "blue")
     #plt.show()
-
+    '''
     t = np.arange(X_.shape[0])
     #plt.title("green")
     plt.xlabel("x axis caption")
@@ -111,10 +118,11 @@ def detect_change(buffer_object,Ts):
     plt.plot(t, S_[:, 2],color="blue")
     #plt.show()
     '''
-    plt.show()
-    #plt.draw()
-    #plt.pause(0.01)
+    #plt.show()
+    
+    plt.draw()
+    plt.pause(0.01)
 
 
 
-detect_change(buffer,0.1)
+#detect_change(buffer,0.1)

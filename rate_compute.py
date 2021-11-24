@@ -3,6 +3,7 @@ import cv2
 import matplotlib.pyplot as plt
 import pdb
 from sklearn.decomposition import FastICA
+import statistics
 
 #create the data to test the function
 
@@ -11,13 +12,21 @@ for j in range(50):
     #im = cv2.imread('/Users/jingyili/Documents/ip-paris/courses_taken/INF573/project/data_face/pic_%i.png'%j)
     #buffer.append(im)
     pass
+plt_all_freq=False
+plt_hr = True
+
+#set params to initialize the times
 
 
-
-def detect_change(buffer_object,Ts):
+times = []
+hr_red = []
+hr_green = []
+hr_blue = []
+hr_mean = []
+def detect_change(buffer_object,Ts, counter_end):
     """
     Input: buffer object, a sequence of frames
-    Output: 
+    Output: Either a plot of the heart rate over a 5 second time window
     """
 
     #print("enter detect_change")
@@ -118,26 +127,52 @@ def detect_change(buffer_object,Ts):
     vals_to_keep = indexing.mask
     blue_freq = blue_freq[vals_to_keep]
     blue_fft = blue_fft[vals_to_keep]
-    
+    if plt_all_freq:
     #print('red_freq',red_freq)
-    plt.clf()
-    plt.title("frequency")
-    plt.xlabel("x axis frequency")
-    plt.ylabel("t axis value")
-    plt.plot(red_freq, np.real(red_fft), color="red")
-    plt.plot(green_freq, np.real(green_fft), color = "green")
-    plt.plot(blue_freq, np.real(blue_fft), color = "blue")
-    
-    plt.draw()
-    plt.pause(0.01)
+        plt.clf()
+        plt.title("frequency")
+        plt.xlabel("x axis frequency")
+        plt.ylabel("t axis value")
+        plt.plot(red_freq, np.real(red_fft), color="red")
+        plt.plot(green_freq, np.real(green_fft), color = "green")
+        plt.plot(blue_freq, np.real(blue_fft), color = "blue")
+        
+        plt.draw()
+        plt.pause(0.01)
 
     peak_red = red_freq[np.argmax(np.real(red_fft))]
     peak_green = green_freq[np.argmax(np.real(green_fft))]
     peak_blue = blue_freq[np.argmax(np.real(blue_fft))]
+    if plt_hr:
+        times.append(counter_end*Ts)
+        hr_red.append(60*peak_red)
+        hr_green.append(60*peak_green)
+        hr_blue.append(60*peak_blue)
+        hr_mean.append(20*(peak_red+peak_blue+peak_green))
+        
+        if(len(times)==101):
+            times.pop(0)
+            hr_mean.pop(0)
+            #compute the mean over 100 time steps
+            heart_rate = statistics.mean(hr_mean)
+            hr_mean.pop()
+            hr_mean.append(heart_rate)
+        
+            plt.clf()
+            plt.title("heart rate")
+            plt.xlabel("time")
+            plt.ylabel("heart rate")
+            plt.plot(times, hr_mean, color="red")
+        
     
+        plt.draw()
+        plt.pause(0.01)
+
     print('heart rate red in bpm',peak_red*60)
     print('heart rate green in bpm',peak_green*60)
     #print('heart rate blue in bpm',peak_blue*60)
+    
+
 
 
 #detect_change(buffer,0.1)

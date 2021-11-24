@@ -42,7 +42,9 @@ def main(framerate = 20, scale=0.1):
             #remove the first frame from the buffer
             #print("frame buffer object",len(frame_buffer_object))
             frame_buffer_object.pop(0)
-            rate_compute.detect_change(frame_buffer_object, 1/framerate)
+            rate_compute.detect_change(frame_buffer_object, 1/framerate, counter)
+        else:
+            print('counter', len(frame_buffer_object))
         #here call t
         #pass the pictures to the function to compute the buffer
         '''
@@ -50,8 +52,9 @@ def main(framerate = 20, scale=0.1):
             cv2.imwrite(
                 "/Users/jingyili/Documents/ip-paris/courses_taken/INF573/project/data_face/pic_%i.png" % counter,
                 forehead)
-        counter += 1
         '''
+        counter += 1
+        
         #tuning of the parameters of the buffer size and the framerate to see when it is good.
         cv2.namedWindow('Input',cv2.WINDOW_NORMAL)
         cv2.resizeWindow('Input', 500,500)

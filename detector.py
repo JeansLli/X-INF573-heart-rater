@@ -29,6 +29,7 @@ def main(framerate = 20, scale=0.1):
         #frame = ndimage.rotate(frame, 180+90)
         coordinates = face_detection.detact_and_draw_box(frame)
         fr, forehead = face_detection.forehead_detection(frame, coordinates)
+        #fr, forehead = face_detection.face_segmentation(frame, coordinates)
         #here manipulate the frame
         #cut out the face here
 
@@ -57,8 +58,8 @@ def main(framerate = 20, scale=0.1):
         
         #tuning of the parameters of the buffer size and the framerate to see when it is good.
         cv2.namedWindow('Input',cv2.WINDOW_NORMAL)
-        cv2.resizeWindow('Input', 500,500)
-        cv2.imshow('Input', fr)
+        #cv2.resizeWindow('Input', 500,500)
+        cv2.imshow('Input', forehead)
 
         c = cv2.waitKey(int(1000//framerate))
 

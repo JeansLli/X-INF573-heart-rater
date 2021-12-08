@@ -15,6 +15,9 @@ for j in range(50):
 plt_all_freq=False
 plt_hr = True
 
+low_freq=0.75
+high_freq=4
+
 #set params to initialize the times
 
 
@@ -89,12 +92,12 @@ def detect_change(buffer_object,Ts, counter_end):
     red_freq = np.fft.fftfreq(np.size(S_[:,0],0),Ts)
     
     
-    indexing = np.ma.masked_where(np.abs(red_freq)<2.1, red_freq)
+    indexing = np.ma.masked_where(np.abs(red_freq)<high_freq, red_freq)
     vals_to_keep = indexing.mask
     red_freq = red_freq[vals_to_keep]
     red_fft = red_fft[vals_to_keep]
 
-    indexing = np.ma.masked_where(red_freq>0.5, red_freq)
+    indexing = np.ma.masked_where(red_freq>low_freq, red_freq)
     vals_to_keep = indexing.mask
     red_freq = red_freq[vals_to_keep]
     red_fft = red_fft[vals_to_keep]
@@ -104,12 +107,12 @@ def detect_change(buffer_object,Ts, counter_end):
     green_freq = np.fft.fftfreq(np.size(S_[:,1],0),Ts)
     
     
-    indexing = np.ma.masked_where(np.abs(green_freq)<2.1, green_freq)
+    indexing = np.ma.masked_where(np.abs(green_freq)<high_freq, green_freq)
     vals_to_keep = indexing.mask
     green_freq = green_freq[vals_to_keep]
     green_fft = green_fft[vals_to_keep]
 
-    indexing = np.ma.masked_where(green_freq>0.5, green_freq)
+    indexing = np.ma.masked_where(green_freq>low_freq, green_freq)
     vals_to_keep = indexing.mask
     green_freq = green_freq[vals_to_keep]
     green_fft = green_fft[vals_to_keep]
@@ -118,15 +121,16 @@ def detect_change(buffer_object,Ts, counter_end):
     blue_freq = np.fft.fftfreq(np.size(S_[:,2],0),Ts)
     
     
-    indexing = np.ma.masked_where(np.abs(blue_freq)<2.1, blue_freq)
+    indexing = np.ma.masked_where(np.abs(blue_freq)<high_freq, blue_freq)
     vals_to_keep = indexing.mask
     blue_freq = blue_freq[vals_to_keep]
     blue_fft = blue_fft[vals_to_keep]
 
-    indexing = np.ma.masked_where(blue_freq>0.5, blue_freq)
+    indexing = np.ma.masked_where(blue_freq>low_freq, blue_freq)
     vals_to_keep = indexing.mask
     blue_freq = blue_freq[vals_to_keep]
     blue_fft = blue_fft[vals_to_keep]
+    #pdb.set_trace()
     if plt_all_freq:
     #print('red_freq',red_freq)
         plt.clf()
@@ -157,16 +161,17 @@ def detect_change(buffer_object,Ts, counter_end):
             heart_rate = statistics.mean(hr_mean)
             hr_mean.pop()
             hr_mean.append(heart_rate)
+            print("hr_mean=",heart_rate)
         
-            plt.clf()
-            plt.title("heart rate")
-            plt.xlabel("time")
-            plt.ylabel("heart rate")
-            plt.plot(times, hr_mean, color="red")
+            #plt.clf()
+            #plt.title("heart rate")
+            #plt.xlabel("time")
+            #plt.ylabel("heart rate")
+            #plt.plot(times, hr_mean, color="red")
         
     
-        plt.draw()
-        plt.pause(0.01)
+            #plt.draw()
+            #plt.pause(0.01)
 
     print('heart rate red in bpm',peak_red*60)
     print('heart rate green in bpm',peak_green*60)

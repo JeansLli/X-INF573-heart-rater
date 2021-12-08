@@ -6,3 +6,9 @@
 4) detact the forehead
 5) measure the frequency of color change
 6) show the video feed with bounding box and with plotted heart rate curve and freqency.
+
+
+
+TODO:
+1. ground truth data
+2. graphcut is more robust 

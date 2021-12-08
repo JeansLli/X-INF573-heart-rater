@@ -1,9 +1,14 @@
 import cv2 as cv2
 import numpy as np
 from skimage import io
+import pdb
+from matplotlib import pyplot as plt
 
 #only works well for people without masks
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+
+
+
 
 def detact_and_draw_box(frame):
     """
@@ -24,7 +29,16 @@ def detact_and_draw_box(frame):
             coords = (x, y, w, h)
             max = w*h
 
+
     (x, y, w, h) = coords
+
+    ########## This adaption is for graphcut
+    h = int(h*1.35)
+    y = int(y*0.5)
+    #h=h-30
+    #y=y+20
+    ##############
+    coords = (x, y, w, h)
     cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), thickness=2)
     return coords
     
@@ -51,3 +65,32 @@ def forehead_detection(frame, coordinates):
     return (frame,frame_mod)
 
     #use the empiric value of skin proportions to cut out the forehead.
+
+
+
+def face_segmentation(frame, coordinates):
+    mask = np.zeros(frame.shape[:2],np.uint8)
+    bgdModel = np.zeros((1,65),np.float64)
+    fgdModel = np.zeros((1,65),np.float64)
+    
+    rect = coordinates
+    print("rect=",rect)
+    #pdb.set_trace()
+    cv2.grabCut(frame,mask,rect,bgdModel,fgdModel,5,cv2.GC_INIT_WITH_RECT)
+    mask2 = np.where((mask==2)|(mask==0),0,1).astype('uint8')
+    
+    graph_face = frame * mask2[:,:,np.newaxis]
+    #graph_face = np.asarray(graph_face) 
+    #plt.imshow(graph_face)
+    #plt.colorbar()
+    #plt.show()
+    return(frame, graph_face)
+
+if __name__=="__main__":
+    frame = cv2.imread("./video/jingyi.jpg")
+    coordinates = detact_and_draw_box(frame)
+    #pdb.set_trace()
+    #fr, forehead = face_detection.forehead_detection(frame, coordinates)
+    fr, graphcut_face = face_segmentation(frame, coordinates)
+    cv2.imwrite('./video/jingyi_cut.jpg', graphcut_face)
+    #cv2.imshow('graphcut_face',graphcut_face)

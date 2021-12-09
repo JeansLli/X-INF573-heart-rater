@@ -23,23 +23,24 @@ def main(framerate = 20, scale=0.1):
     counter = 0
     while True:
         ret, frame = cap.read()
-        frame = cv2.resize(frame, None, fx=1, fy=1, interpolation=cv2.INTER_AREA)
+        #frame = cv2.resize(frame, None, fx=1, fy=1, interpolation=cv2.INTER_AREA)
+        
         #here detact the face
         #rotate the frame if necessary
         #frame = ndimage.rotate(frame, 180+90)
-        coordinates = face_detection.detact_and_draw_box(frame)
-        fr, forehead = face_detection.forehead_detection(frame, coordinates)
-        #fr, forehead = face_detection.face_segmentation(frame, coordinates)
-        #here manipulate the frame
-        #cut out the face here
-
-        if forehead.shape[0]==0:
+        coordinates = face_detection.detact_and_draw_box(frame, False)
+        #pdb.set_trace()
+        if np.array(coordinates).any()==0:
             continue
-
-        frame_buffer_object.append(forehead)
-        #how many frames do we want to pass?
-        #print("len(frame_buffer_object)=",len(frame_buffer_object))
-        if(len(frame_buffer_object)==(framerate)*5):
+        else:
+            #fr, forehead = face_detection.forehead_detection(frame, coordinates)
+            fr, forehead = face_detection.face_segmentation(frame, coordinates)
+            #here manipulate the frame
+            #cut out the face here
+            frame_buffer_object.append(forehead)
+            #how many frames do we want to pass?
+            #print("len(frame_buffer_object)=",len(frame_buffer_object))
+        if(len(frame_buffer_object)==(framerate)*30):
             #remove the first frame from the buffer
             #print("frame buffer object",len(frame_buffer_object))
             frame_buffer_object.pop(0)
@@ -68,4 +69,4 @@ def main(framerate = 20, scale=0.1):
     cv2.destroyAllWindows()
 
 
-main(framerate = 47, scale = 1.5)
+main(framerate = 1, scale = 1.5)

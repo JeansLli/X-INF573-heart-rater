@@ -13,7 +13,8 @@ for j in range(50):
     #buffer.append(im)
     pass
 plt_all_freq=False
-plt_hr = True
+plt_hr = False
+plt_signals=True
 
 low_freq=0.75
 high_freq=4
@@ -22,6 +23,7 @@ high_freq=4
 
 
 times = []
+times_2=[i/25 for i in range(24)]
 hr_red = []
 hr_green = []
 hr_blue = []
@@ -83,7 +85,23 @@ def detect_change(buffer_object,Ts, counter_end):
     S_ = transformer.fit_transform(X_)
     #print("X_.shape", X_.shape)
     #print("S_.shape",S_.shape)
+    
+    if plt_signals:
+    #print('red_freq',red_freq)
 
+        times_2.pop(0)
+        times_2.append(counter_end*Ts)
+        #pdb.set_trace()
+        plt.clf()
+        plt.title("frequency")
+        plt.xlabel("x axis frequency")
+        plt.ylabel("t axis value")
+        plt.plot(times_2, S_[:,0], color="red")
+        plt.plot(times_2, S_[:,1], color = "green")
+        plt.plot(times_2, S_[:,2], color = "blue")
+        
+        plt.draw()
+        plt.pause(0.01)
 
     #pdb.set_trace()
 
@@ -154,7 +172,8 @@ def detect_change(buffer_object,Ts, counter_end):
         hr_blue.append(60*peak_blue)
         hr_mean.append(20*(peak_red+peak_blue+peak_green))
         
-        if(len(times)==101):
+        
+        if(len(times)==25):
             times.pop(0)
             hr_mean.pop(0)
             #compute the mean over 100 time steps
@@ -163,15 +182,16 @@ def detect_change(buffer_object,Ts, counter_end):
             hr_mean.append(heart_rate)
             print("hr_mean=",heart_rate)
         
-            #plt.clf()
-            #plt.title("heart rate")
-            #plt.xlabel("time")
-            #plt.ylabel("heart rate")
-            #plt.plot(times, hr_mean, color="red")
-        
+
+        plt.clf()
+        plt.title("heart rate of the green component")
+        plt.xlabel("time")
+        plt.ylabel("heart rate")
+        plt.plot(times, hr_green, color="green")
     
-            #plt.draw()
-            #plt.pause(0.01)
+
+        plt.draw()
+        plt.pause(0.01)
 
     print('heart rate red in bpm',peak_red*60)
     print('heart rate green in bpm',peak_green*60)

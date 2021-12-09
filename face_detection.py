@@ -10,7 +10,7 @@ face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
 
 
-def detact_and_draw_box(frame):
+def detact_and_draw_box(frame, drawing):
     """
     Input: A frame 
     Output: The frame with bounding box on the face, only the largest one.
@@ -33,13 +33,14 @@ def detact_and_draw_box(frame):
     (x, y, w, h) = coords
 
     ########## This adaption is for graphcut
-    h = int(h*1.35)
-    y = int(y*0.5)
+    #h = int(h*1.35)
+    #y = int(y*0.5)
     #h=h-30
     #y=y+20
     ##############
     coords = (x, y, w, h)
-    cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), thickness=2)
+    if drawing==True:
+        cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), thickness=2)
     return coords
     
 
@@ -73,7 +74,12 @@ def face_segmentation(frame, coordinates):
     bgdModel = np.zeros((1,65),np.float64)
     fgdModel = np.zeros((1,65),np.float64)
     
-    rect = coordinates
+    rect = np.array(coordinates)
+
+    #this is necessary to augment the size of the bounding box in order to fill in the whole face in a 
+    #rectangle, that we can pass to the graph cut segmentation function.
+    rect[1] =int(0.5*rect[1])
+    rect[3] = int(rect[3]*1.6)
     print("rect=",rect)
     #pdb.set_trace()
     cv2.grabCut(frame,mask,rect,bgdModel,fgdModel,5,cv2.GC_INIT_WITH_RECT)
@@ -92,5 +98,5 @@ if __name__=="__main__":
     #pdb.set_trace()
     #fr, forehead = face_detection.forehead_detection(frame, coordinates)
     fr, graphcut_face = face_segmentation(frame, coordinates)
-    cv2.imwrite('./video/jingyi_cut.jpg', graphcut_face)
+    #cv2.imwrite('./video/jingyi_cut.jpg', graphcut_face)
     #cv2.imshow('graphcut_face',graphcut_face)

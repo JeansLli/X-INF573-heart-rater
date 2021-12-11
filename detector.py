@@ -40,7 +40,10 @@ def main(framerate = 20, scale=0.1):
             frame_buffer_object.append(forehead)
             #how many frames do we want to pass?
             #print("len(frame_buffer_object)=",len(frame_buffer_object))
-        if(len(frame_buffer_object)==(framerate)*30):
+
+            #only if we add the forehead we want to augment the counter
+            counter += 1
+        if(len(frame_buffer_object)==(framerate)*6):
             #remove the first frame from the buffer
             #print("frame buffer object",len(frame_buffer_object))
             frame_buffer_object.pop(0)
@@ -55,7 +58,7 @@ def main(framerate = 20, scale=0.1):
                 "/Users/jingyili/Documents/ip-paris/courses_taken/INF573/project/data_face/pic_%i.png" % counter,
                 forehead)
         '''
-        counter += 1
+        
         
         #tuning of the parameters of the buffer size and the framerate to see when it is good.
         cv2.namedWindow('Input',cv2.WINDOW_NORMAL)
@@ -69,4 +72,4 @@ def main(framerate = 20, scale=0.1):
     cv2.destroyAllWindows()
 
 
-main(framerate = 1, scale = 1.5)
+main(framerate = 5, scale = 1.5)

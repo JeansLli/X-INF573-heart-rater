@@ -13,8 +13,8 @@ for j in range(50):
     #buffer.append(im)
     pass
 plt_all_freq=False
-plt_hr = False
-plt_signals=True
+plt_hr = True
+plt_signals=False
 
 low_freq=0.75
 high_freq=4
@@ -23,14 +23,18 @@ high_freq=4
 
 
 times = []
-times_2=[i/25 for i in range(24)]
+times_2=[i*(1./5.) for i in range(29)] # add 1/framerate manually as it is not a global variable
 hr_red = []
 hr_green = []
 hr_blue = []
 hr_mean = []
+hr_plot=[]
+hr_plot_red=[]
+hr_plot_green=[]
+hr_plot_blue=[]
 def detect_change(buffer_object,Ts, counter_end):
     """
-    Input: buffer object, a sequence of frames
+    Input: buffer object, a sequence of frames, The size of the time step and the 
     Output: Either a plot of the heart rate over a 5 second time window
     """
 
@@ -70,12 +74,20 @@ def detect_change(buffer_object,Ts, counter_end):
     x_red = red_channel.mean(axis=(1,2))
     x_green = green_channel.mean(axis=(1,2))
     x_blue = blue_channel.mean(axis=(1,2))
+    
+    #normalize the signal over the entire time, i.e we will create a signal with zero mean and unit variance.
+    mean_red = np.mean(x_red, axis=0)
+    mean_green = np.mean(x_green, axis=0)
+    mean_blue = np.mean(x_blue, axis=0)
 
-    #normalize the vector over the whole time
-    x_red =  x_red/np.linalg.norm(x_red)
-    x_green =  x_green/np.linalg.norm(x_green)
-    x_blue =  x_blue/np.linalg.norm(x_blue)
+    std_red = np.std(x_red, axis=0)
+    std_green = np.std(x_green, axis=0)
+    std_blue = np.std(x_blue, axis=0)
 
+    x_red =  (x_red-mean_red)/std_red
+    x_green =  (x_green-mean_green)/std_green
+    x_blue =  (x_blue-mean_blue)/std_blue
+    #pdb.set_trace()
 
     #Linear independent component analysis can be divided into noiseless and noisy cases
     # https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.FastICA.html
@@ -85,17 +97,19 @@ def detect_change(buffer_object,Ts, counter_end):
     S_ = transformer.fit_transform(X_)
     #print("X_.shape", X_.shape)
     #print("S_.shape",S_.shape)
-    
+    #pdb.set_trace()
     if plt_signals:
     #print('red_freq',red_freq)
 
-        times_2.pop(0)
-        times_2.append(counter_end*Ts)
+        #create a time array over the 
+        times_2 = [counter_end*Ts-i*Ts for i in range(S_.shape[0])]
+        times_2.reverse()
         #pdb.set_trace()
         plt.clf()
-        plt.title("frequency")
+        plt.title("Plot of the raw color signals extracted from the ICA")
         plt.xlabel("x axis frequency")
         plt.ylabel("t axis value")
+        #pdb.set_trace()
         plt.plot(times_2, S_[:,0], color="red")
         plt.plot(times_2, S_[:,1], color = "green")
         plt.plot(times_2, S_[:,2], color = "blue")
@@ -106,7 +120,7 @@ def detect_change(buffer_object,Ts, counter_end):
     #pdb.set_trace()
 
     t = np.arange(S_.shape[0])
-    red_fft = np.fft.fft(S_[:,0])
+    red_fft = np.abs(np.fft.fft(S_[:,0]))**2
     red_freq = np.fft.fftfreq(np.size(S_[:,0],0),Ts)
     
     
@@ -121,7 +135,7 @@ def detect_change(buffer_object,Ts, counter_end):
     red_fft = red_fft[vals_to_keep]
 
 
-    green_fft = np.fft.fft(S_[:,1])
+    green_fft = np.abs(np.fft.fft(S_[:,1]))**2
     green_freq = np.fft.fftfreq(np.size(S_[:,1],0),Ts)
     
     
@@ -135,7 +149,7 @@ def detect_change(buffer_object,Ts, counter_end):
     green_freq = green_freq[vals_to_keep]
     green_fft = green_fft[vals_to_keep]
 
-    blue_fft = np.fft.fft(S_[:,2])
+    blue_fft = np.abs(np.fft.fft(S_[:,2]))**2
     blue_freq = np.fft.fftfreq(np.size(S_[:,2],0),Ts)
     
     
@@ -167,28 +181,53 @@ def detect_change(buffer_object,Ts, counter_end):
     peak_blue = blue_freq[np.argmax(np.real(blue_fft))]
     if plt_hr:
         times.append(counter_end*Ts)
+        #raw signal data
         hr_red.append(60*peak_red)
         hr_green.append(60*peak_green)
         hr_blue.append(60*peak_blue)
         hr_mean.append(20*(peak_red+peak_blue+peak_green))
-        
-        
-        if(len(times)==25):
+
+        if(len(times)<=50):
+            hr_plot=hr_mean
+            hr_plot_red = hr_red
+            hr_plot_green = hr_green
+            hr_plot_blue = hr_blue
+        if(len(times)==50):
             times.pop(0)
+
             hr_mean.pop(0)
-            #compute the mean over 100 time steps
-            heart_rate = statistics.mean(hr_mean)
-            hr_mean.pop()
-            hr_mean.append(heart_rate)
-            print("hr_mean=",heart_rate)
+            hr_red.pop(0)
+            hr_green.pop(0)
+            hr_blue.pop(0)
+
+            #compute the mean over a five second to denoise the signal.
+            heart_rate_mean = statistics.mean(hr_mean)
+            #hr_mean.pop()
+            #hr_mean.append(heart_rate_mean)
+
+
+            hr_plot.append(heart_rate_mean)
+            hr_plot_red.append(statistics.mean(hr_red))
+            hr_plot_green.append(statistics.mean(hr_green))
+            hr_plot_blue.append(statistics.mean(hr_blue))
+
+            hr_plot.pop(0)
+            hr_plot_red.pop(0)
+            hr_plot_green.pop(0)
+            hr_plot_blue.pop(0)
+
+            print("hr_mean=",heart_rate_mean)
         
 
         plt.clf()
-        plt.title("heart rate of the green component")
+        plt.title("heart rate of the mean of the color component")
         plt.xlabel("time")
         plt.ylabel("heart rate")
-        plt.plot(times, hr_green, color="green")
-    
+        plt.plot(times, hr_plot, color="black")
+        plt.ylim(50,120)
+        #plt.plot(times, hr_plot_red, color="red")
+        #plt.plot(times,hr_plot_green,color="green")
+        #plt.plot(times, hr_plot_blue,color="blue")
 
         plt.draw()
         plt.pause(0.01)

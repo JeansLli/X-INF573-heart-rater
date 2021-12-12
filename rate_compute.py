@@ -83,7 +83,7 @@ def detect_change(buffer_object,Ts, counter_end):
     std_red = np.std(x_red, axis=0)
     std_green = np.std(x_green, axis=0)
     std_blue = np.std(x_blue, axis=0)
-
+    #pdb.set_trace()
     x_red =  (x_red-mean_red)/std_red
     x_green =  (x_green-mean_green)/std_green
     x_blue =  (x_blue-mean_blue)/std_blue
@@ -187,12 +187,12 @@ def detect_change(buffer_object,Ts, counter_end):
         hr_blue.append(60*peak_blue)
         hr_mean.append(20*(peak_red+peak_blue+peak_green))
 
-        if(len(times)<=50):
+        if(len(times)<=150):
             hr_plot=hr_mean
             hr_plot_red = hr_red
             hr_plot_green = hr_green
             hr_plot_blue = hr_blue
-        if(len(times)==50):
+        if(len(times)==150):
             times.pop(0)
 
             hr_mean.pop(0)
@@ -202,9 +202,11 @@ def detect_change(buffer_object,Ts, counter_end):
 
             #compute the mean over a five second to denoise the signal.
             heart_rate_mean = statistics.mean(hr_mean)
-            #hr_mean.pop()
-            #hr_mean.append(heart_rate_mean)
+            hr_mean.pop()
+            hr_mean.append(heart_rate_mean)
 
+            
+            
 
             hr_plot.append(heart_rate_mean)
             hr_plot_red.append(statistics.mean(hr_red))
@@ -220,10 +222,12 @@ def detect_change(buffer_object,Ts, counter_end):
         
 
         plt.clf()
-        plt.title("heart rate of the mean of the color component")
+        plt.title("Heart rate derived from the mean of the face color components\n captured during the Formula 1 season final.")
         plt.xlabel("time")
         plt.ylabel("heart rate")
         plt.plot(times, hr_plot, color="black")
+        #plt.plot(times, hr_green, color="green")
+        #plt.plot(times, hr_plot_green, color="green")
         plt.ylim(50,120)
         #plt.plot(times, hr_plot_red, color="red")
         #plt.plot(times,hr_plot_green,color="green")

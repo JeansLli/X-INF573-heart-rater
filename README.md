@@ -11,13 +11,13 @@ You can also change the parameters for the visualization codes.
 ### If you want to detect the heart rate from a recorded video, run detector_disk.py
 Our recorded video is saved in folder ./video and the GrabCut results for each frame is saved in folder ./segmentation_theo.
 
-You can also use your own video but remember to cut the video into frames and change the parameters **framerate** and **nr_frames**(the number of captured frames) that fit your video.
+You can also use your own video but remember to cut the video into frames and change the parameters **framerate** and **nr_frames** (the number of captured frames) that fit your video.
 
 
 
 ## Pipeline
-1) First open webcam and fetch the video feed
-2) input the video in the python code
+1) open webcam and fetch the video feed
+2) input the video into the python code
 3) detact the face, draw the bounding box for the face
 4) detact the forehead or segment the face
 5) measure the frequency of color change

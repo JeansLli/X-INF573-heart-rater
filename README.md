@@ -3,10 +3,9 @@
 This project is for measuring the heart rate from video capturing.
 
 ### If you want to detect the real-time heart rate, run detector.py
-The user-defined parameter **framerate** is the number of frames that the camera takes per second. You can also change the parameters for the visualization codes.
+The user-defined parameter **framerate** is the number of frames that the camera takes per second. For my own laptop, if the framerate is more than 1, the real-time result is not accurate enough because the GrabCut algorithm is very time consumig.
 
-For my own laptop, if the framerate is more than 1, the real-time result is not accurate enough because the GrabCut algorithm is very time comsumig.
-
+You can also change the parameters for the visualization codes.
 
 
 ### If you want to detect the heart rate from a recorded video, run detector_disk.py

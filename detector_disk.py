@@ -23,7 +23,7 @@ def determine_hr(framerate, nr_frames):
         
         ret, frame = cap.read()
 
-        forehead = cv2.imread("/home/theo/Documents/ecole_polytechnique/computer_vision/project/segmentation_theo/img_%i.png"%j)
+        forehead = cv2.imread("segmented_faces/img_%i.png"%j)
         frame_buffer.append(forehead)
         if(len(frame_buffer)==5*framerate):
             frame_buffer.pop(0)

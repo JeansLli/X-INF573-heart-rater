@@ -43,7 +43,7 @@ def main(framerate = 20, scale=0.1):
 
             #only if we add the forehead we want to augment the counter
             counter += 1
-        if(len(frame_buffer_object)==(framerate)*6):
+        if(len(frame_buffer_object)==(framerate)*30):
             #remove the first frame from the buffer
             #print("frame buffer object",len(frame_buffer_object))
             frame_buffer_object.pop(0)
@@ -72,4 +72,4 @@ def main(framerate = 20, scale=0.1):
     cv2.destroyAllWindows()
 
 
-main(framerate = 5, scale = 1.5)
+main(framerate = 3, scale = 1.5)

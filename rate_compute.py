@@ -7,11 +7,9 @@ import statistics
 
 #create the data to test the function
 
-buffer = []
-for j in range(50):
-    #im = cv2.imread('/Users/jingyili/Documents/ip-paris/courses_taken/INF573/project/data_face/pic_%i.png'%j)
-    #buffer.append(im)
-    pass
+
+
+#select which quantity you want to plot.
 plt_all_freq=False
 plt_hr = True
 plt_signals=False
@@ -23,7 +21,7 @@ high_freq=4
 
 
 times = []
-times_2=[i*(1./5.) for i in range(29)] # add 1/framerate manually as it is not a global variable
+times_2=[i for i in range(29)] # add 1/framerate manually as it is not a global variable
 hr_red = []
 hr_green = []
 hr_blue = []
@@ -123,13 +121,15 @@ def detect_change(buffer_object,Ts, counter_end):
     red_fft = np.abs(np.fft.fft(S_[:,0]))**2
     red_freq = np.fft.fftfreq(np.size(S_[:,0],0),Ts)
     
-    
+    #extract with the mask only the values that are in the reasonable domain for the heart rate.
     indexing = np.ma.masked_where(np.abs(red_freq)<high_freq, red_freq)
+    #indexing = np.ma.masked_where(True, red_freq)
     vals_to_keep = indexing.mask
     red_freq = red_freq[vals_to_keep]
     red_fft = red_fft[vals_to_keep]
 
     indexing = np.ma.masked_where(red_freq>low_freq, red_freq)
+    #indexing = np.ma.masked_where(True, red_freq)
     vals_to_keep = indexing.mask
     red_freq = red_freq[vals_to_keep]
     red_fft = red_fft[vals_to_keep]
@@ -140,11 +140,13 @@ def detect_change(buffer_object,Ts, counter_end):
     
     
     indexing = np.ma.masked_where(np.abs(green_freq)<high_freq, green_freq)
+    #indexing = np.ma.masked_where(True, green_freq)
     vals_to_keep = indexing.mask
     green_freq = green_freq[vals_to_keep]
     green_fft = green_fft[vals_to_keep]
 
     indexing = np.ma.masked_where(green_freq>low_freq, green_freq)
+    #indexing = np.ma.masked_where(True, green_freq)
     vals_to_keep = indexing.mask
     green_freq = green_freq[vals_to_keep]
     green_fft = green_fft[vals_to_keep]
@@ -154,11 +156,13 @@ def detect_change(buffer_object,Ts, counter_end):
     
     
     indexing = np.ma.masked_where(np.abs(blue_freq)<high_freq, blue_freq)
+    #indexing = np.ma.masked_where(True, blue_freq)
     vals_to_keep = indexing.mask
     blue_freq = blue_freq[vals_to_keep]
     blue_fft = blue_fft[vals_to_keep]
 
     indexing = np.ma.masked_where(blue_freq>low_freq, blue_freq)
+    #indexing = np.ma.masked_where(True, blue_freq)
     vals_to_keep = indexing.mask
     blue_freq = blue_freq[vals_to_keep]
     blue_fft = blue_fft[vals_to_keep]
@@ -166,7 +170,7 @@ def detect_change(buffer_object,Ts, counter_end):
     if plt_all_freq:
     #print('red_freq',red_freq)
         plt.clf()
-        plt.title("frequency")
+        plt.title("frequency spectrum")
         plt.xlabel("x axis frequency")
         plt.ylabel("t axis value")
         plt.plot(red_freq, np.real(red_fft), color="red")
@@ -175,7 +179,7 @@ def detect_change(buffer_object,Ts, counter_end):
         
         plt.draw()
         plt.pause(0.01)
-
+    #pdb.set_trace()
     peak_red = red_freq[np.argmax(np.real(red_fft))]
     peak_green = green_freq[np.argmax(np.real(green_fft))]
     peak_blue = blue_freq[np.argmax(np.real(blue_fft))]
@@ -186,7 +190,9 @@ def detect_change(buffer_object,Ts, counter_end):
         hr_green.append(60*peak_green)
         hr_blue.append(60*peak_blue)
         hr_mean.append(20*(peak_red+peak_blue+peak_green))
+        
 
+        #this means that we will take the heart rate over a 5*framerate window, i.e the mean over 5 seconds.
         if(len(times)<=150):
             hr_plot=hr_mean
             hr_plot_red = hr_red
@@ -222,7 +228,7 @@ def detect_change(buffer_object,Ts, counter_end):
         
 
         plt.clf()
-        plt.title("Heart rate derived from the mean of the face color components\n captured during the Formula 1 season final.")
+        plt.title("Heart rate derived from the mean of the face color components.")
         plt.xlabel("time")
         plt.ylabel("heart rate")
         plt.plot(times, hr_plot, color="black")
@@ -236,9 +242,7 @@ def detect_change(buffer_object,Ts, counter_end):
         plt.draw()
         plt.pause(0.01)
 
-    print('heart rate red in bpm',peak_red*60)
-    print('heart rate green in bpm',peak_green*60)
-    #print('heart rate blue in bpm',peak_blue*60)
+    
     
 
 

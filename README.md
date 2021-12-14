@@ -1,6 +1,6 @@
 # X-INF573-heart-rater
 
-This project is for measuring the heart rate from video capturing. The code can be found at https://github.com/JeansLli/X-INF574_3D-printing
+This project is for measuring the heart rate from video capturing. The code can be found at https://github.com/JeansLli/X-INF573-heart-rater
 
 
 ### If you want to detect the real-time heart rate, run detector.py
